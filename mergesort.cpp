@@ -31,9 +31,10 @@ int main(){
     // TODO: Seed your randomizer
 	
     // TODO: Get array size and thread count from user
-    int n;
+    int n, nthread, start, end;
+    
 	std::cout << "Enter array size: " <<std::endl;
-	cin >> n;
+	cin >> nthread;
 	do{
 		std::cout << "Enter number of Threads: " <<std::endl;
 		cin >> nthread;
@@ -45,9 +46,8 @@ int main(){
     // TODO: Generate a random array of given size
 	
     // TODO: Call the generate_intervals method to generate the merge sequence
-
+	vector<ii> intervals = generate_intervals(start,end);
     // TODO: Call merge on each interval in sequence
-	
     // Once you get the single-threaded version to work, it's time to implement 
     // the concurrent version. Good luck :)
 }

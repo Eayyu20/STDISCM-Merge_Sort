@@ -29,12 +29,12 @@ void merge(vector<int> &array, int s, int e);
 
 int main(){
     // TODO: Seed your randomizer
-	
+	srand(1001);
     // TODO: Get array size and thread count from user
     int n, nthread, start, end;
     
 	std::cout << "Enter array size: " <<std::endl;
-	cin >> nthread;
+	cin >> n;
 	do{
 		std::cout << "Enter number of Threads: " <<std::endl;
 		cin >> nthread;
@@ -44,9 +44,29 @@ int main(){
 		}
 	} while (nthread < 1);
     // TODO: Generate a random array of given size
-	
+	int array[n];
+	for (int j=0;j<n;j++)
+	{
+		array[j] = j+1;
+	} //fill with 1 to n
+	//shuffle 
+	int shuffle_index;
+	int shuffle_value;
+	int stored_value;
+	/*for (int l=0;l<n;l++)
+	{
+		stored_value = array[l]; // store current value
+		shuffle_index = rand()%n; //get random index
+		shuffle_value = array[shuffle_value]; //get the contents of that index
+		array[l] = shuffle_value; // place it in the currrent index
+		array[shuffle_value] = stored_value; //store the current value in that random index
+	}*/
+	for (int k=0;k<n;k++)
+	{
+		std::cout << array[k] <<std::endl;
+	}	
     // TODO: Call the generate_intervals method to generate the merge sequence
-	vector<ii> intervals = generate_intervals(start,end);
+	vector<ii> intervals = generate_intervals(1,n);
     // TODO: Call merge on each interval in sequence
     // Once you get the single-threaded version to work, it's time to implement 
     // the concurrent version. Good luck :)

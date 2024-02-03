@@ -2,7 +2,7 @@
 #include <bits/stdc++.h>
 #include <utility>
 #include <vector>
-
+#include <chrono>
 using namespace std;
 
 typedef pair<int,int> ii;
@@ -56,11 +56,17 @@ int main(){
 	{
 		std::cout << array[k] <<std::endl;
 	}*/	
+	//start timer when we start mergesorting
+	auto start = high_resolution_clock::now();
     // TODO: Call the generate_intervals method to generate the merge sequence
 	vector<ii> intervals = generate_intervals(1,n);
     // TODO: Call merge on each interval in sequence
     // Once you get the single-threaded version to work, it's time to implement 
     // the concurrent version. Good luck :)
+    //end timer when we finished mergesorting
+    auto stop = high_resolution_clock::now();
+	auto duration = duration_cast<microseconds>(stop - start);
+    cout << duration.count() << endl; //print time it took to merge sort
 }
 
 vector<ii> generate_intervals(int start, int end) {

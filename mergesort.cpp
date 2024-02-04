@@ -58,9 +58,11 @@ int main(){
     // TODO: Call the generate_intervals method to generate the merge sequence
     vector<ii> intervals = generate_intervals(1,n);
 	
-	merge(arr,1,n); 
-	
     // TODO: Call merge on each interval in sequence
+    for (const auto& interval : intervals) {
+            merge(arr, interval.first-1, interval.second-1);
+        }
+
     // Once you get the single-threaded version to work, it's time to implement 
     // the concurrent version. Good luck :)
     //end timer when we finished mergesorting

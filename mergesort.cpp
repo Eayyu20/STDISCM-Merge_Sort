@@ -44,6 +44,7 @@ int main(){
 			std::cout << "Threads cannot be less than 1 " <<std::endl;
 		}
 	} while (nthread < 1);
+
     // TODO: Generate a random array of given size
 	int array[n];
 	for (int j=0;j<n;j++)
@@ -51,7 +52,17 @@ int main(){
 		array[j] = j+1;
 	} //fill with 1 to n
 	//shuffle 
-	shuffle(array, array+n,default_random_engine(seed));
+	for (int i = n - 1; i > 0; --i) {
+        int j = seed % (i + 1);
+        swap(array[i], array[j]);
+    }
+    
+    // for (int k=0;k<n;k++)
+	// {
+	// 	cout << array[k];
+    //     cout << " ";
+	// }
+
 	vector<int> arr(array, array+n); //convert the array to a vector
 	//start timer when we start mergesorting
 	auto begin = std::chrono::high_resolution_clock::now();

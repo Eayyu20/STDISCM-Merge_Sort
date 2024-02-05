@@ -3,8 +3,13 @@
 #include <utility>
 #include <vector>
 #include <chrono>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+
 using namespace std;
 using namespace std::chrono;
+
 typedef pair<int,int> ii;
 /*
 This function generates all the intervals for merge sort iteratively, given the 
@@ -28,6 +33,48 @@ e     : int         - end index (inclusive) of merge
 */
 void merge(vector<int> &array, int s, int e);
 
+class ThreadPool {
+public:
+    ThreadPool(int n) : num_threads(n) {}
+
+    void start_threads(vector<ii> &intervals, vector<int> &arr) {
+        for (int i = 0; i < num_threads; ++i) {
+            threads.emplace_back(&ThreadPool::thread_worker, this, ref(intervals), ref(arr));
+        }
+    }
+
+    void wait_for_threads() {
+        for (auto &thread : threads) {
+            thread.join();
+        }
+    }
+
+private:
+    int num_threads;
+    vector<thread> threads;
+    mutex mtx;
+    condition_variable cv;
+
+    void thread_worker(vector<ii> &intervals, vector<int> &arr) {
+        unique_lock<mutex> lock(mtx);
+
+        while (!intervals.empty()) {
+            ii interval = intervals.front();
+            intervals.erase(intervals.begin());
+            
+            //cout << "Thread working on interval [" << interval.first << ", " << interval.second << "]" << endl;
+
+            lock.unlock();
+
+            merge(arr, interval.first-1, interval.second-1);
+
+            lock.lock();
+        }
+
+        cv.notify_all();
+    }
+};
+
 int main(){
     // TODO: Seed your randomizer
 	int seed = 1001;
@@ -44,47 +91,47 @@ int main(){
 			std::cout << "Threads cannot be less than 1 " <<std::endl;
 		}
 	} while (nthread < 1);
-
     // TODO: Generate a random array of given size
-	int array[n];
+	std::vector<int> arr(n);
 	for (int j=0;j<n;j++)
 	{
-		array[j] = j+1;
+		arr[j] = j+1;
 	} //fill with 1 to n
 	//shuffle 
-	for (int i = n - 1; i > 0; --i) {
-        int j = seed % (i + 1);
-        swap(array[i], array[j]);
-    }
-    
-    // for (int k=0;k<n;k++)
-	// {
-	// 	cout << array[k];
-    //     cout << " ";
-	// }
-
-	vector<int> arr(array, array+n); //convert the array to a vector
+    std::shuffle(arr.begin(), arr.end(), std::default_random_engine(seed));
 	//start timer when we start mergesorting
 	auto begin = std::chrono::high_resolution_clock::now();
     // TODO: Call the generate_intervals method to generate the merge sequence
     vector<ii> intervals = generate_intervals(1,n);
 	
     // TODO: Call merge on each interval in sequence
-    for (const auto& interval : intervals) {
-            merge(arr, interval.first-1, interval.second-1);
-        }
+    //for (const auto& interval : intervals) {
+    //        merge(arr, interval.first-1, interval.second-1);
+    //    }
+
+    /* for (int k=0;k<n;k++)
+	{
+		std::cout << arr.at(k) <<std::endl;
+	}
+    for (const auto &interval : intervals) {
+        cout << "[" << interval.first << ", " << interval.second << "] ";
+    } */
+
+    ThreadPool thread_pool(nthread);
+    thread_pool.start_threads(intervals, arr);
+    thread_pool.wait_for_threads();
 
     // Once you get the single-threaded version to work, it's time to implement 
     // the concurrent version. Good luck :)
     //end timer when we finished mergesorting
     auto finish = std::chrono::high_resolution_clock::now();
 	auto duration = duration_cast<microseconds>(finish - begin);
-    cout << duration.count() << endl; //print time it took to merge sort
+    cout << "Duration: " << duration.count() << endl; //print time it took to merge sort
     cout << endl;
-    for (int k=0;k<n;k++)
+    /* for (int k=0;k<n;k++)
 	{
 		std::cout << arr.at(k) <<std::endl;
-	}
+	} */
 }
 
 vector<ii> generate_intervals(int start, int end) {
